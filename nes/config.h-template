@@ -1,0 +1,18 @@
+#pragma once
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+
+#define LOG_CPU 0
+#define CPU_TEST 0
+#define DRAW_NORMALLY 1
+#define DRAW_SPRITE0 0
+#define DRAW_NAMETABLES 0
+#define FRAME_TIME 16
+#define USE_SOUND 1
+
+#ifdef _DEBUG
+#undef USE_SOUND
+#define USE_SOUND 0
+#endif
+
+#endif

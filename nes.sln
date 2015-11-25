@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nes", "nes\nes.vcxproj", "{03B44F4B-9DF9-4367-8822-7400286C2529}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDLTest", "SDLTest\SDLTest.vcxproj", "{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Disassembler", "Disassembler\Disassembler.vcxproj", "{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Profiler|Win32 = Profiler|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Debug|Win32.ActiveCfg = Debug|Win32
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Debug|Win32.Build.0 = Debug|Win32
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Profiler|Win32.ActiveCfg = Release_Profiler|Win32
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Profiler|Win32.Build.0 = Release_Profiler|Win32
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Release|Win32.ActiveCfg = Release|Win32
+		{03B44F4B-9DF9-4367-8822-7400286C2529}.Release|Win32.Build.0 = Release|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Debug|Win32.Build.0 = Debug|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Profiler|Win32.ActiveCfg = Release_Profiler|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Profiler|Win32.Build.0 = Release_Profiler|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Release|Win32.ActiveCfg = Release|Win32
+		{FDF00079-4E74-4157-BC8C-A5E6DF22DA3C}.Release|Win32.Build.0 = Release|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Debug|Win32.Build.0 = Debug|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Profiler|Win32.ActiveCfg = Release|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Profiler|Win32.Build.0 = Release|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Release|Win32.ActiveCfg = Release|Win32
+		{F1E82BB5-4634-42BB-B13F-574CF2B0FF60}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
