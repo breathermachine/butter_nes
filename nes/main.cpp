@@ -64,29 +64,33 @@ void KeyHandler(GS_KEYEVENT keyEventType, GS_VIRTKEY virtKey)
 
 	switch(virtKey)
 	{
+	case GS_VIRTKEY::VIRTKEY_JOY2:
 	case GS_VIRTKEY::VIRTKEY_X:
-		joyStickStatus[0] = pressed;
+		joyStickStatus[0] = pressed; // A
 		break;
+	case GS_VIRTKEY::VIRTKEY_JOY3:
 	case GS_VIRTKEY::VIRTKEY_Z:
-		joyStickStatus[1] = pressed;
+		joyStickStatus[1] = pressed; // B
 		break;
 	case GS_VIRTKEY::VIRTKEY_LEFT:
-		joyStickStatus[6] = pressed;
+		joyStickStatus[6] = pressed; // left
 		break;
 	case GS_VIRTKEY::VIRTKEY_RIGHT:
-		joyStickStatus[7] = pressed;
+		joyStickStatus[7] = pressed; //right
 		break;
 	case GS_VIRTKEY::VIRTKEY_UP:
-		joyStickStatus[4] = pressed;
+		joyStickStatus[4] = pressed; //up
 		break;
 	case GS_VIRTKEY::VIRTKEY_DOWN:
-		joyStickStatus[5] = pressed;
+		joyStickStatus[5] = pressed; // down
 		break;
+	case GS_VIRTKEY::VIRTKEY_JOY_START:
 	case GS_VIRTKEY::VIRTKEY_RETURN:
-		joyStickStatus[3] = pressed;
+		joyStickStatus[3] = pressed; // start
 		break;
+	case GS_VIRTKEY::VIRTKEY_JOY_SELECT:
 	case GS_VIRTKEY::VIRTKEY_LSHIFT:
-		joyStickStatus[2] = pressed;
+		joyStickStatus[2] = pressed; //select
 		break;
 	case GS_VIRTKEY::VIRTKEY_Q:
 		if (!pressed)
@@ -103,10 +107,13 @@ void KeyHandler(GS_KEYEVENT keyEventType, GS_VIRTKEY virtKey)
 	case GS_VIRTKEY::VIRTKEY_C:
 		extern bool drawNT;
 		drawNT = !drawNT;
-		//turboB = pressed;
-		//joyStickStatus[1] = pressed;
 		break;
-	case GS_VIRTKEY::VIRTKEY_V:
+	case GS_VIRTKEY::VIRTKEY_JOY7: // Turbo B
+		turboB = pressed;
+		joyStickStatus[1] = pressed;
+		break;
+	case GS_VIRTKEY::VIRTKEY_JOY8:
+	case GS_VIRTKEY::VIRTKEY_V: // Turbo A
 		turboA = pressed;
 		joyStickStatus[0] = pressed;
 		break;
