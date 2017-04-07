@@ -1,8 +1,8 @@
 #include "cpu.h"
 #include "utils.h"
-#include <Windows.h>
+#include "SDL2/SDL.h"
 #include <assert.h>
-#include "graphics_system.h"
+#include "sdl_graphics_system.h"
 
 bool drawNT = false;
 
@@ -71,13 +71,13 @@ void CPU::ppuClockPPU()
 			}
 #endif
 
-			static DWORD lastFrameTime = GetTickCount();
-			int remaining = FRAME_TIME - (GetTickCount() - lastFrameTime);
+			static Uint32 lastFrameTime = SDL_GetTicks();
+			int remaining = FRAME_TIME - (SDL_GetTicks() - lastFrameTime);
 
 			if (remaining > 0)
-				Sleep(remaining);
-			
-			lastFrameTime = GetTickCount();
+				SDL_Delay(remaining);
+
+			lastFrameTime = SDL_GetTicks();
 		}
 	}
 }
@@ -144,20 +144,20 @@ void CPU::ppuUpdateAddress2007()
 void CPU::sprEvalSprites()
 {
 	/*
-	„¥„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„©„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„©„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„§
-	„    0    „  YYYYYYYY „  Sprite Y coordinate - 1. Consider the   „ 
-	„         „           „  coordinate the upper-left corner of     „ 
-	„         „           „  the sprite itself.                      „ 
-	„    1    „  IIIIIIII „  Sprite Tile Index #                     „ 
-	„    2    „  vhp???cc „  Colour/Attributes                       „ 
-	„         „           „   v = Vertical Flip   (1=Flip)           „ 
-	„         „           „   h = Horizontal Flip (1=Flip)           „ 
-	„         „           „   p = Sprite Priority Bit                „ 
-	„         „           „          0 = Sprite on top of background „ 
-	„         „           „          1 = Sprite behind background    „ 
-	„         „           „   c = Upper two (2) bits of colour       „ 
-	„    3    „  XXXXXXXX „  Sprite X coordinate (upper-left corner) „ 
-	„¤„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„¨„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„¨„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„£
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	ï¿½ï¿½   0    ï¿½ï¿½ YYYYYYYY ï¿½ï¿½ Sprite Y coordinate - 1. Consider the   ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½ coordinate the upper-left corner of     ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½ the sprite itself.                      ï¿½ï¿½
+	ï¿½ï¿½   1    ï¿½ï¿½ IIIIIIII ï¿½ï¿½ Sprite Tile Index #                     ï¿½ï¿½
+	ï¿½ï¿½   2    ï¿½ï¿½ vhp???cc ï¿½ï¿½ Colour/Attributes                       ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½  v = Vertical Flip   (1=Flip)           ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½  h = Horizontal Flip (1=Flip)           ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½  p = Sprite Priority Bit                ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½         0 = Sprite on top of background ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½         1 = Sprite behind background    ï¿½ï¿½
+	ï¿½ï¿½        ï¿½ï¿½          ï¿½ï¿½  c = Upper two (2) bits of colour       ï¿½ï¿½
+	ï¿½ï¿½   3    ï¿½ï¿½ XXXXXXXX ï¿½ï¿½ Sprite X coordinate (upper-left corner) ï¿½ï¿½
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
 	unsigned char addr = memory[OAMADDR];
 
@@ -266,24 +266,24 @@ void CPU::ppuRenderPixel()
 	if (!drawNT)
 	{
 		if (ppuObjColor && (ppuObjFG || isTransparent(ppuBackgroundPaletteIndex)))
-			IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, nesPalette[ppuMemory[0x3F10 | ppuObjColor | sprRenderMemory[ppuObjIdx].palette] & 0x3F]);
+			SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, nesPalette[ppuMemory[0x3F10 | ppuObjColor | sprRenderMemory[ppuObjIdx].palette] & 0x3F]);
 		else if (!isTransparent(ppuBackgroundPaletteIndex))
-			IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, nesPalette[ppuMemory[0x3F00 | ppuBackgroundPaletteIndex] & 0x3F]);
+			SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, nesPalette[ppuMemory[0x3F00 | ppuBackgroundPaletteIndex] & 0x3F]);
 		else
-			IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, ppuUnivBGColor);
+			SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, ppuUnivBGColor);
 	}
 #elif DRAW_SPRITE0
 	if (winningObjectColor)
 	{
 		if (ppuSprite0InRangeInRender && winningObjectIndex == 0)
-			IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, 0x00FF0000);
+			SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, 0x00FF0000);
 		else
-			IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, 0x00007700);
+			SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, 0x00007700);
 	}
 	else if (!isTransparent(ppuBackgroundPaletteIndex))
-		IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, 0xFFFFFFFF);
+		SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, 0xFFFFFFFF);
 	else
-		IGraphicsSystem::GetSystem()->PutPixel4x4(ppuRenderX, ppuRenderY, 0x00000000);
+		SDLGraphicsSystem::GetSystem()->PutPixel(ppuRenderX, ppuRenderY, 0x00000000);
 #endif
 }
 
@@ -681,7 +681,7 @@ void CPU::DrawNameTable(int sx, int sy, unsigned short addr)
 					p0 <<= 1;
 					p1 <<= 1;
 
-					IGraphicsSystem::GetSystem()->PutPixel2x2(x + sx, y + sy, nesPalette[ppuMemory[0x3F00 | color]]);
+					SDLGraphicsSystem::GetSystem()->PutPixel(x + sx, y + sy, nesPalette[ppuMemory[0x3F00 | color]]);
 					++x;
 				}
 

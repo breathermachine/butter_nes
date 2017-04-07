@@ -4,6 +4,10 @@
 #include "config.h"
 #include <vector>
 
+#define MAKE_SHORT(lo, hi) ((lo) | ((hi) << 8))
+#define GET_LOBYTE(s) ((s) & 0xFF)
+#define GET_HIBYTE(s) (((s) & 0xFF00) >> 8)
+
 struct INESHeader
 {
 	char signature[4];
@@ -209,7 +213,7 @@ enum CPU_OPERATION
 	OP_NOP = 0xEA,
 	OP_RTS = 0x60,
 	OP_BRK = 0x00,
-	OP_RTI = 0x40,	
+	OP_RTI = 0x40,
 };
 
 enum ADDRESSING_MODE
@@ -322,7 +326,7 @@ struct CPU
 
 	void set_flag(FLAG flag, int value);
 	int  get_flag(FLAG flag);
-	
+
 	void shift(LOCATION reg, SHIFT_DIRECTION dir, bool rotate);
 	void inc_decrement(LOCATION reg, int dir);
 
@@ -341,10 +345,10 @@ struct CPU
 	void DecodeOpcode();
 
 	// Always decrements SP after push
-	void push_byte(unsigned char byte); 
+	void push_byte(unsigned char byte);
 
 	// Does not increment SP before pull
-	unsigned char pull_byte(); 
+	unsigned char pull_byte();
 
     // CPU memory access functions
     unsigned char get_byte(unsigned short address);
@@ -376,11 +380,11 @@ struct CPU
 
 	// state machine functions
 	typedef void (CPU::*SM_Func)();
-	
+
 	SM_Func			cpuSMFunc;
 	void StoreRegister();
 	void PerformRMWOp();
-	
+
 	void SetSM(SM_Func func);
 	void SM_NMI();
 	void SM_IRQ();
@@ -446,13 +450,13 @@ struct CPU
     unsigned char  ppuFineX;
 
 	//Latches for NT fetching
-    unsigned char  ppuRenderNTTile;           
+    unsigned char  ppuRenderNTTile;
     unsigned char  ppuRenderAttributeLatch;
 	unsigned char  ppuPatternLatch;
 
     unsigned short ppuRenderX;
     unsigned short ppuRenderY;
-	
+
 	unsigned short ppuNTShiftRegister[2];
 	unsigned short ppuRenderAttributeShiftRegister[2];
 
@@ -496,7 +500,7 @@ struct CPU
 
     void sprEvalSprites();
 	void sprFetchSprites();
-    
+
 ////////////////////////////////////////////// APU /////////////////////////////////////////////////
 	void apuClockFrameCounter();	//runs at a fairly low frequency (240Hz)
 	unsigned char apuFrameCounterFrame;
@@ -568,4 +572,3 @@ void put_sound_sample(int val);
 extern bool joyStickStatus[];
 
 #endif
-

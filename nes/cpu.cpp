@@ -1,13 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "cpu.h"
-#include "graphics_system.h"
+//#include "graphics_system.h"
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
-#include <crtdbg.h>
 #include <stdlib.h>
+
+#ifdef _WIN32
+#include <crtdbg.h>
 #include <windows.h>
+#endif
 
 char _log_opname[255];
 char _log_operands[255];
@@ -186,7 +189,7 @@ bool CPU::IsSupportedMapper(int mapper)
 
 	int supportedMappers[] = { MAPPER_NROM, MAPPER_UNROM, MAPPER_CNROM, MAPPER_87, MAPPER_185, MAPPER_MMC1, MAPPER_MMC3, MAPPER_GNROM, MAPPER_AXROM, MAPPER_MMC2 };
 
-	for (int i = 0; i < _countof(supportedMappers); ++i)
+	for (int i = 0; i < sizeof(supportedMappers)/sizeof(supportedMappers[0]); ++i)
 		if (supportedMappers[i] == mapper)
 			return true;
 
@@ -213,9 +216,7 @@ void CPU::load_rom(char *filename)
 
 	if (!IsSupportedMapper(mapper))
 	{
-		char buffer[128];
-		sprintf(buffer, "Unsupported mapper: %d", mapper);
-		MessageBox(NULL, buffer, "Unsupported mapper", MB_OK);
+		fprintf(stderr, "Unsupported mapper: %d\n", mapper);
 		fclose(f);
 		return;
 	}
@@ -437,7 +438,7 @@ void CPU::reset()
 	A = 0;
 	X = 0;
 	Y = 0;
-	PC = MAKEWORD(memory[0xFFFC], memory[0xFFFD]);
+	PC = MAKE_SHORT(memory[0xFFFC], memory[0xFFFD]);
 #endif
 	printf("Starting at %X\n", PC);
 

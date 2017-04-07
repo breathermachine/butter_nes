@@ -1,5 +1,5 @@
 #include "cpu.h"
-#include <Windows.h>
+//#include <Windows.h>
 
 void CPU::SM_rti()
 {
@@ -68,14 +68,14 @@ void CPU::SM_jmp_ind()
 		PrintLogLine();
 		break;
 	case 4:
-		cpuMemAddress = MAKEWORD(cpuOperand1, cpuOperand2);
+		cpuMemAddress = MAKE_SHORT(cpuOperand1, cpuOperand2);
 		PC &= 0xFF00;
 		PC |= get_byte(cpuMemAddress);
 		break;
 
 	case 5:
 		PC &= 0xFF;
-		PC |= get_byte(MAKEWORD((cpuMemAddress + 1) & 0xFF, cpuOperand2)) << 8;
+		PC |= get_byte(MAKE_SHORT((cpuMemAddress + 1) & 0xFF, cpuOperand2)) << 8;
 		cpuState = INST_FETCH_OPCODE;
 		cpuOperation = OP_NOP;
 		break;
@@ -162,7 +162,7 @@ void CPU::SM_abs()
 		PrintLogLine();
 		break;
 	case 4:
-		cpuMemAddress = MAKEWORD(cpuOperand1, cpuOperand2);
+		cpuMemAddress = MAKE_SHORT(cpuOperand1, cpuOperand2);
 
 		if (cpuInstType & IT_READ)
 			cpuValue = get_byte(cpuMemAddress);
@@ -300,11 +300,11 @@ void CPU::SM_brk()
 		++PC;
 		break;
 	case 3:
-		push_byte(HIBYTE(PC));
+		push_byte(GET_HIBYTE(PC));
 		set_flag(FLAG_BREAK, 1);
 		break;
 	case 4:
-		push_byte(LOBYTE(PC));
+		push_byte(GET_LOBYTE(PC));
 		break;
 	case 5:
 		push_byte(P | FLAG_BREAK);
@@ -541,8 +541,8 @@ void CPU::SM_abs_indexed()
 		else if (cpuAddressingMode == AM_ABSOLUTE_Y)
 			offset = Y;
 
-		cpuMemAddress = MAKEWORD(cpuOperand1 + offset, cpuOperand2);
-		cpuNewMemAddress = MAKEWORD(cpuOperand1, cpuOperand2) + offset;
+		cpuMemAddress = MAKE_SHORT(cpuOperand1 + offset, cpuOperand2);
+		cpuNewMemAddress = MAKE_SHORT(cpuOperand1, cpuOperand2) + offset;
 		break;
 	case 4:
 		if (cpuNewMemAddress == cpuMemAddress && cpuInstType == IT_READ)
@@ -572,4 +572,3 @@ void CPU::SM_abs_indexed()
 		break;
 	}
 }
-

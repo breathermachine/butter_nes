@@ -2,22 +2,26 @@
 #ifndef SDL_GRAPHICS_SYSTEM_H
 #define SDL_GRAPHICS_SYSTEM_H
 
-#include "graphics_system.h"
-
+#include <SDL2/SDL.h>
 struct SDLGraphicsSystemImpl;
 
-class SDLGraphicsSystem : public IGraphicsSystem
+typedef void FrameAction();
+typedef void KeyEventHandler(Uint32 keyEventType, SDL_Keycode virtKey);
+typedef void DSPHandler(void *data, unsigned int len);
+
+class SDLGraphicsSystem
 {
 public:
+	static SDLGraphicsSystem* GetSystem();
 	SDLGraphicsSystem();
-	virtual void Init(int width, int height);
-	virtual void RunSystem(FrameAction *loop);
-	virtual void Flip();
-	virtual void SetWindowCaption(const char *text);
-	virtual void SetKeyHandler(KeyEventHandler *handler);
-	virtual void SetDSPHandler(DSPHandler *handler);
-
-	virtual ~SDLGraphicsSystem();
+	void Init(int width, int height);
+	void RunSystem(FrameAction *loop);
+	void Flip();
+	void SetWindowCaption(const char *text);
+	void SetKeyHandler(KeyEventHandler *handler);
+	void SetDSPHandler(DSPHandler *handler);
+	void PutPixel(unsigned int x, unsigned int y, int argb);
+	~SDLGraphicsSystem();
 
 private:
 	SDLGraphicsSystemImpl *m_pImpl;

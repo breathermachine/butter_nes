@@ -5,16 +5,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "cpu.h"
-#include "graphics_system.h"
 #include "SDL_graphics_system.h"
-#include "SDL.h"
-#include "SDL_thread.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_thread.h"
+#include <algorithm>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <crtdbg.h>
 #include <math.h>
+
+#ifdef _WIN32
+#include <crtdbg.h>
 #include <windows.h>
+#endif
 
 #define TARGET_FPS 60.0
 #define SCALE 2
@@ -28,7 +31,7 @@ bool joyStickStatus[8];
 char *GetFilenameWin32();
 
 char fpsText[128];
-   
+
 int frameCount = 0;
 
 struct SteroSample
@@ -58,62 +61,62 @@ void put_sound_sample(int val)
 static bool turboB = false;
 static bool turboA = false;
 
-void KeyHandler(GS_KEYEVENT keyEventType, GS_VIRTKEY virtKey)
+void KeyHandler(Uint32 keyEventType, SDL_Keycode virtKey)
 {
-	bool pressed = (keyEventType == GS_KEYEVENT::KEYDOWN);
+	bool pressed = (keyEventType == SDL_KEYDOWN);
 
 	switch(virtKey)
 	{
-	case GS_VIRTKEY::VIRTKEY_JOY2:
-	case GS_VIRTKEY::VIRTKEY_X:
+	//case GS_VIRTKEY::VIRTKEY_JOY2:
+	case SDLK_x:
 		joyStickStatus[0] = pressed; // A
 		break;
-	case GS_VIRTKEY::VIRTKEY_JOY3:
-	case GS_VIRTKEY::VIRTKEY_Z:
+	//case GS_VIRTKEY::VIRTKEY_JOY3:
+	case SDLK_z:
 		joyStickStatus[1] = pressed; // B
 		break;
-	case GS_VIRTKEY::VIRTKEY_LEFT:
+	case SDLK_LEFT:
 		joyStickStatus[6] = pressed; // left
 		break;
-	case GS_VIRTKEY::VIRTKEY_RIGHT:
+	case SDLK_RIGHT:
 		joyStickStatus[7] = pressed; //right
 		break;
-	case GS_VIRTKEY::VIRTKEY_UP:
+	case SDLK_UP:
 		joyStickStatus[4] = pressed; //up
 		break;
-	case GS_VIRTKEY::VIRTKEY_DOWN:
+	case SDLK_DOWN:
 		joyStickStatus[5] = pressed; // down
 		break;
-	case GS_VIRTKEY::VIRTKEY_JOY_START:
-	case GS_VIRTKEY::VIRTKEY_RETURN:
+	//case GS_VIRTKEY::VIRTKEY_JOY_START:
+	case SDLK_RETURN:
 		joyStickStatus[3] = pressed; // start
 		break;
-	case GS_VIRTKEY::VIRTKEY_JOY_SELECT:
-	case GS_VIRTKEY::VIRTKEY_LSHIFT:
+	//case GS_VIRTKEY::VIRTKEY_JOY_SELECT:
+	case SDLK_LSHIFT:
 		joyStickStatus[2] = pressed; //select
 		break;
-	case GS_VIRTKEY::VIRTKEY_Q:
+	case SDLK_q:
 		if (!pressed)
 			cpu.resetCPU = true;
 		break;
-	case GS_VIRTKEY::VIRTKEY_W:
+	case SDLK_w:
 		if (!pressed)
 		{
-			cpu.romFilename = GetFilenameWin32();
+			cpu.romFilename = "a.nes"; //GetFilenameWin32();
 			cpu.resetCPU = true;
 			cpu.loadROM = true;
 		}
 		break;
-	case GS_VIRTKEY::VIRTKEY_C:
+	case SDLK_c:
 		extern bool drawNT;
 		drawNT = !drawNT;
 		break;
-	case GS_VIRTKEY::VIRTKEY_JOY7: // Turbo B
+	//case GS_VIRTKEY::VIRTKEY_JOY7: // Turbo B
 		turboB = pressed;
 		joyStickStatus[1] = pressed;
 		break;
-	case GS_VIRTKEY::VIRTKEY_JOY8:
-	case GS_VIRTKEY::VIRTKEY_V: // Turbo A
+	//case GS_VIRTKEY::VIRTKEY_JOY8:
+	case SDLK_v: // Turbo A
 		turboA = pressed;
 		joyStickStatus[0] = pressed;
 		break;
@@ -127,9 +130,10 @@ void FrameUpdate()
 	if (turboA)
 		joyStickStatus[0] = !joyStickStatus[0];
 
-	IGraphicsSystem::GetSystem()->Flip();
+	SDLGraphicsSystem::GetSystem()->Flip();
 }
 
+#ifdef _WIN32
 OPENFILENAME ofn ;
 char szFile[512];
 
@@ -147,12 +151,13 @@ char *GetFilenameWin32()
 	ofn.nMaxFileTitle = 0 ;
 	ofn.lpstrInitialDir=NULL ;
 	ofn.Flags = OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST ;
-	
+
     if (!GetOpenFileName( &ofn ))
 		return 0;
 
     return ofn.lpstrFile;
 }
+#endif
 
 bool closing = false;
 
@@ -191,9 +196,9 @@ void DSPCallback(void *data, unsigned int len)
 #endif
 		return;
 	}
-	
+
 	int toReadSamples = len / 4;
-	int firstRead = min(toReadSamples, SAMPLES_SIZE - read_pos);
+	int firstRead = std::min(toReadSamples, SAMPLES_SIZE - read_pos);
 
 	memcpy(data, samples + read_pos, firstRead * sizeof(SteroSample));
 	samples_size -= firstRead;
@@ -211,12 +216,8 @@ void DSPCallback(void *data, unsigned int len)
 #endif
 }
 
-LARGE_INTEGER NFREQ;
-
 int main(int argc, char *argv[])
 {
-	QueryPerformanceFrequency(&NFREQ);
-
 #if CPU_TEST
     cpu.load_rom("nestest.nes");
 	cpu.reset();
@@ -227,23 +228,20 @@ int main(int argc, char *argv[])
 	for (int i = 1; i <= clocks; ++i)
 		cpu.clock();
 #else
-	SDLGraphicsSystem sdlGraphicsSystem;
-	IGraphicsSystem::SetSystem(&sdlGraphicsSystem);
-
-	char *romFileName = GetFilenameWin32();
+	char *romFileName = "a.nes"; //GetFilenameWin32();
 	if (!romFileName)
 		return 1;
 
 	cpu.load_rom(romFileName);
 	cpu.reset();
 
-	IGraphicsSystem *pSystem = IGraphicsSystem::GetSystem();
-	
+	SDLGraphicsSystem *pSystem = SDLGraphicsSystem::GetSystem();
+
 	pSystem->SetDSPHandler(&DSPCallback);
 	pSystem->SetKeyHandler(&KeyHandler);
-	pSystem->Init(256 * 4, 240 * 4);
+	pSystem->Init(256, 240);
 
-	SDL_CreateThread(&EmulatorThread, NULL);
+	SDL_CreateThread(&EmulatorThread, "EmulatorThread", NULL);
 
 	pSystem->RunSystem(&FrameUpdate);
 #endif
