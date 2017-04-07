@@ -54,7 +54,7 @@ void SDLGraphicsSystem::Init(int width, int height)
 	m_pImpl->m_width = width;
 	m_pImpl->m_height = height;
 
-	SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_OPENGL, &m_pImpl->m_pWindow, &m_pImpl->m_pRenderer);
+	SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE, &m_pImpl->m_pWindow, &m_pImpl->m_pRenderer);
 
 	m_pImpl->m_pTexture = SDL_CreateTexture(m_pImpl->m_pRenderer,
                                SDL_PIXELFORMAT_ARGB8888,
